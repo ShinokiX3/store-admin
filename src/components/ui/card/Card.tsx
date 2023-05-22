@@ -6,10 +6,11 @@ import { HeartOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Card as ACard, message } from 'antd';
 import Link from 'next/link';
 import { useActions } from '@/hooks/useActions';
+import { IProduct } from '@/types/product.interface';
 const { Meta } = ACard;
 
 interface ICard {
-	product: ICategoryResults;
+	product: IProduct;
 }
 
 // TODO: rewrite card ui & logic
@@ -26,18 +27,17 @@ const Card: React.FC<ICard> = ({ product }) => {
 	};
 
 	const handleCart = () => {
-		const { asin, title, image, rating, price } = product;
-
-		console.log(product, price);
+		// const { asin, title, image, rating, price } = product;
+		const { _id, code, title, description, picture, cost, discount } = product;
 
 		addToCart({
-			asin: asin,
+			asin: _id,
 			title: title,
-			image: { link: image },
-			price: { value: price?.value },
+			image: { link: `http://localhost:3000/${product.picture}` },
+			price: { value: discount ? discount * cost : cost },
 			rrp: '',
 			quantity: 1,
-			rating: rating,
+			rating: '',
 		});
 		success();
 	};
@@ -59,7 +59,7 @@ const Card: React.FC<ICard> = ({ product }) => {
 						}}
 					>
 						<Link
-							href={`/product/${product.asin}`}
+							href={`/product/${product._id}`}
 							style={{ textDecoration: 'none' }}
 						>
 							<Image
@@ -67,28 +67,33 @@ const Card: React.FC<ICard> = ({ product }) => {
 								height={0}
 								style={{ width: 'auto', height: '140px' }}
 								alt="example"
-								loader={() => product.image}
-								src={product.image}
+								loader={() => `http://localhost:3000/${product.picture}`}
+								src={`http://localhost:3000/${product.picture}`}
 							/>
 						</Link>
 					</div>
 				}
 				actions={[
-					<div key="price">{product?.price?.raw || 'unknown'}</div>,
+					<div key="price">
+						{product.discount
+							? product.discount * product.cost
+							: product.cost || 'unknown'}
+						₴
+					</div>,
 					<div key="rating" className="ju-al-center" style={{ gap: '5px' }}>
-						{product?.rating || 0}
+						{/* {product?.rating || 0} */}
 						<HeartOutlined />
 					</div>,
 					<ShoppingCartOutlined onClick={handleCart} key="cart" />,
 				]}
 			>
 				<Link
-					href={`/product/${product.asin}`}
+					href={`/product/${product._id}`}
 					style={{ textDecoration: 'none' }}
 				>
 					<Meta
 						style={{ fontSize: '11pt', fontWeight: 400 }}
-						title={product.title.substring(0, 50)}
+						title={`${product.title.substring(0, 50)} 0.5 л.`}
 					/>
 				</Link>
 			</ACard>

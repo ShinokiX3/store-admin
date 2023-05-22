@@ -1,13 +1,13 @@
 import DBWrapper from '@/components/ui/wrapper/Wrapper';
 import React, { useEffect, useState } from 'react';
-import CategoriesForm from './CategoriesForm';
+import BrandForm from './BrandForm';
 import styled from 'styled-components';
 import { IAttribute } from '@/types/product.interface';
+import { ProductService } from '@/services/Server/ServerProduct';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
-import { CategoryService } from '@/services/Server/ServerCategory';
 import { Controls } from '@/components/ui/controls/Controls';
 
-const Category = styled.div`
+const Brands = styled.div`
 	width: 100%;
 	gap: 20px;
 	display: grid;
@@ -23,30 +23,28 @@ const Category = styled.div`
 	}
 `;
 
-const Categories = () => {
-	const [categories, setCategories] = useState<
-		(IAttribute & { title: string })[] | []
-	>([]);
+const Brand = () => {
+	const [brands, setBrands] = useState<IAttribute[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	const fetchData = async () => {
 		setLoading(true);
-		const categories = await CategoryService.getAllCategories();
-		if (categories.length > 0) {
-			setCategories(categories);
+		const brands = await ProductService.getAllBrands();
+		if (brands.length > 0) {
+			setBrands(brands);
 		}
 		setLoading(false);
 	};
 
 	const createOne = async (value: string) => {
-		const response = await CategoryService.createCategory(value);
+		const response = await ProductService.createBrand(value);
 		if (response) {
 			fetchData();
 		}
 	};
 
 	const deleteOne = async (id: string) => {
-		const response = await CategoryService.deleteCategory(id);
+		const response = await ProductService.deleteBrand(id);
 		if (response) {
 			fetchData();
 		}
@@ -61,28 +59,28 @@ const Categories = () => {
 	}
 
 	return (
-		<DBWrapper title="категорії" Form={CategoriesForm} createOne={createOne}>
+		<DBWrapper title="бренди" Form={BrandForm} createOne={createOne}>
 			<div>
-				<Category
+				<Brands
 					style={{ backgroundColor: 'transparent', marginTop: '15px' }}
 					key={'product-about'}
 				>
 					<p>Id</p>
 					<p>Value</p>
-				</Category>
-				{categories.map((category) => (
-					<Category key={category._id}>
-						<p>{category._id}</p>
-						<p>{category.title}</p>
+				</Brands>
+				{brands.map((brand) => (
+					<Brands key={brand._id}>
+						<p>{brand._id}</p>
+						<p>{brand.value}</p>
 						<Controls>
 							<EditOutlined />
-							<CloseOutlined onClick={() => deleteOne(category._id)} />
+							<CloseOutlined onClick={() => deleteOne(brand._id)} />
 						</Controls>
-					</Category>
+					</Brands>
 				))}
 			</div>
 		</DBWrapper>
 	);
 };
 
-export default Categories;
+export default Brand;

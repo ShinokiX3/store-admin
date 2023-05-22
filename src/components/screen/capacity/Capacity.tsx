@@ -1,13 +1,13 @@
 import DBWrapper from '@/components/ui/wrapper/Wrapper';
 import React, { useEffect, useState } from 'react';
-import CategoriesForm from './CategoriesForm';
+import CapacityForm from './CapacityForm';
 import styled from 'styled-components';
 import { IAttribute } from '@/types/product.interface';
-import { CloseOutlined, EditOutlined } from '@ant-design/icons';
-import { CategoryService } from '@/services/Server/ServerCategory';
+import { ProductService } from '@/services/Server/ServerProduct';
 import { Controls } from '@/components/ui/controls/Controls';
+import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 
-const Category = styled.div`
+const Capacities = styled.div`
 	width: 100%;
 	gap: 20px;
 	display: grid;
@@ -23,30 +23,28 @@ const Category = styled.div`
 	}
 `;
 
-const Categories = () => {
-	const [categories, setCategories] = useState<
-		(IAttribute & { title: string })[] | []
-	>([]);
+const Capacity = () => {
+	const [capacities, setCapacities] = useState<IAttribute[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	const fetchData = async () => {
 		setLoading(true);
-		const categories = await CategoryService.getAllCategories();
-		if (categories.length > 0) {
-			setCategories(categories);
+		const capacities = await ProductService.getAllCapacities();
+		if (capacities.length > 0) {
+			setCapacities(capacities);
 		}
 		setLoading(false);
 	};
 
 	const createOne = async (value: string) => {
-		const response = await CategoryService.createCategory(value);
+		const response = await ProductService.createCapacity(value);
 		if (response) {
 			fetchData();
 		}
 	};
 
 	const deleteOne = async (id: string) => {
-		const response = await CategoryService.deleteCategory(id);
+		const response = await ProductService.deleteCapacity(id);
 		if (response) {
 			fetchData();
 		}
@@ -61,28 +59,28 @@ const Categories = () => {
 	}
 
 	return (
-		<DBWrapper title="категорії" Form={CategoriesForm} createOne={createOne}>
+		<DBWrapper title="ємності" Form={CapacityForm} createOne={createOne}>
 			<div>
-				<Category
+				<Capacities
 					style={{ backgroundColor: 'transparent', marginTop: '15px' }}
 					key={'product-about'}
 				>
 					<p>Id</p>
 					<p>Value</p>
-				</Category>
-				{categories.map((category) => (
-					<Category key={category._id}>
-						<p>{category._id}</p>
-						<p>{category.title}</p>
+				</Capacities>
+				{capacities.map((capacity) => (
+					<Capacities key={capacity._id}>
+						<p>{capacity._id}</p>
+						<p>{capacity.value}</p>
 						<Controls>
 							<EditOutlined />
-							<CloseOutlined onClick={() => deleteOne(category._id)} />
+							<CloseOutlined onClick={() => deleteOne(capacity._id)} />
 						</Controls>
-					</Category>
+					</Capacities>
 				))}
 			</div>
 		</DBWrapper>
 	);
 };
 
-export default Categories;
+export default Capacity;

@@ -7,9 +7,11 @@ import Spinner from '@/components/ui/common/Spinner';
 import { MessageInstance } from 'antd/es/message/interface';
 import { SmileOutlined } from '@ant-design/icons';
 import { useActions } from '@/hooks/useActions';
+import { useRouter } from 'next/router';
+import nookies from 'nookies';
 
 interface ILoginForm {
-	children: ReactNode;
+	children?: ReactNode;
 }
 
 const LoginForm: React.FC<ILoginForm> = ({ children }) => {
@@ -19,6 +21,8 @@ const LoginForm: React.FC<ILoginForm> = ({ children }) => {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
 
+	const router = useRouter();
+
 	const { login } = useActions();
 
 	const signin = useCallback(() => {
@@ -27,10 +31,14 @@ const LoginForm: React.FC<ILoginForm> = ({ children }) => {
 				setLoading(true);
 
 				const resp = await AuthService.login({ email, password });
-				console.log(resp);
 
 				if (resp?.token) {
 					setStatus('success');
+					localStorage.setItem('token', resp.token);
+					nookies.set(null, 'auth-token', resp.token, {
+						maxAge: 30 * 24 * 60 * 60,
+						path: '/',
+					});
 					login({ token: resp.token, user: resp.user[0] });
 				} else setStatus('error');
 
@@ -44,6 +52,7 @@ const LoginForm: React.FC<ILoginForm> = ({ children }) => {
 	if (status === 'success') {
 		setTimeout(() => {
 			setStatus('');
+			router.push('/');
 		}, 3000);
 
 		return (

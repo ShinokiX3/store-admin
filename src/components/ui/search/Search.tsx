@@ -1,5 +1,4 @@
 import { useDebounce } from '@/hooks/useDebounce';
-import { AmazonProduct } from '@/services/Amazon/AmazonProduct';
 import { Empty, TreeSelect } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Spinner from '../common/Spinner';
@@ -72,21 +71,21 @@ const Search = ({ styles }: { styles?: Object }) => {
 		(async () => {
 			if (debouncedValue) {
 				setLoading(true);
-				const response = await AmazonProduct.getProductsByTerm(debouncedValue);
+				// const response = await AmazonProduct.getProductsByTerm(debouncedValue);
 
-				const products = response.search_results.map(
-					(item: ISearchProduct, index: number) => {
-						return {
-							asin: item.asin,
-							pId: index,
-							value: item.title,
-							title: item.title,
-						};
-					}
-				);
+				// const products = response.search_results.map(
+				// 	(item: ISearchProduct, index: number) => {
+				// 		return {
+				// 			asin: item.asin,
+				// 			pId: index,
+				// 			value: item.title,
+				// 			title: item.title,
+				// 		};
+				// 	}
+				// );
 
-				if (products.length === 0) setSearchResults([]);
-				else setSearchResults(products);
+				// if (products.length === 0) setSearchResults([]);
+				// else setSearchResults(products);
 
 				setLoading(false);
 			} else console.log('declined');

@@ -29,12 +29,14 @@ const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 40px;
+
+	width: calc(100vw - 60px);
+
+	padding: 0px 20px;
 	padding-top: 80px;
-	padding-left: 20px;
-	padding-right: 20px;
 
 	@media (max-width: 700px) {
-		padding-top: 0px;
+		padding-top: 15px;
 	}
 `;
 
@@ -62,23 +64,12 @@ const Details = styled.div`
 `;
 
 const Product: React.FC<ICProduct> = ({ data }) => {
-	console.log(data);
-
-	const { product } = data;
-
-	const viewData = {
-		main_image: product?.main_image,
-		images: product?.images,
-		videos: product?.videos,
-		videos_flat: product?.videos_flat,
-	};
-
 	return (
 		// TODO: grid wrapper
 		<Wrapper>
 			<MainInfo>
-				<View data={viewData} />
-				<Description data={product} />
+				<View data={data} />
+				<Description data={data} />
 			</MainInfo>
 			<Line />
 			<Details>

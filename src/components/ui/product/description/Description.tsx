@@ -1,30 +1,54 @@
 import { useActions } from '@/hooks/useActions';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { IProduct, Variants } from '@/types/product.interface';
-import { HeartOutlined } from '@ant-design/icons';
+import { HeartOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Button, Rate, Space } from 'antd';
 import Image from 'next/image';
 import React from 'react';
+import styled from 'styled-components';
 
 interface IDescripton {
 	data: IProduct;
 }
 
-// TODO: typed this function
+const Attributes = styled.div`
+	display: grid;
+	grid-template-columns: 0.3fr 1fr;
 
-const newSetFromVariants = <T,>(array: T[], selector: string) => {
-	return array?.reduce((accu, curr) => {
-		if (
-			accu.findIndex(
-				(item) =>
-					item.dimensions.filter((i) => i.name === selector)[0]?.value ===
-					curr.dimensions.filter((i) => i.name === selector)[0]?.value
-			) === -1
-		)
-			return [...accu, curr];
-		else return [...accu];
-	}, []);
-};
+	div {
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+		padding: 5px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+`;
+
+const Question = styled.div`
+	white-space: nowrap;
+	background-color: #f9f9f9;
+`;
+
+const Answer = styled.div`
+	background-color: #fdfdfd;
+	color: gray;
+`;
+
+const DescriptionP = styled.p`
+	padding: 15px;
+	border-radius: 0.2rem;
+	line-height: 20px;
+	background-color: #f9f9f9;
+`;
+
+const TitleP = styled.p`
+	margin-bottom: 5px;
+	font-size: 22pt;
+	font-weight: bold;
+`;
+
+// TODO: typed this function
 
 const Description: React.FC<IDescripton> = ({ data }) => {
 	console.log(data);
@@ -32,60 +56,46 @@ const Description: React.FC<IDescripton> = ({ data }) => {
 	const { items } = useTypedSelector((state) => state.cart);
 	const { addToCart } = useActions();
 
-	const { variants } = data;
-
-	const sizes = newSetFromVariants(variants, 'Size');
-	const colors = newSetFromVariants(variants, 'Color');
-
 	// TODO: Create custom hook for this
 
 	const handleToCart = () => {
 		// TODO: Desctructuring object
 		// TODO: Where can i get price?
-		const {
-			asin,
-			title,
-			main_image,
-			rating,
-			buybox_winner: { rrp, price },
-		} = data;
+		const { _id, title, picture, cost, discount } = data;
 		console.log(data);
 
 		addToCart({
-			asin: asin,
+			asin: _id,
 			title: title,
-			image: main_image,
-			price: price,
-			rrp: rrp,
+			image: { link: `http://localhost:3000/${picture}` },
+			price: cost,
+			rrp: discount ? discount * cost : cost,
 			quantity: 1,
-			rating: rating,
+			rating: '',
 		});
 	};
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-			<h2>{data.title}</h2>
-			<p>{data.sub_title.text}</p>
-			<span>
-				<Rate disabled value={data.rating} />
-				<span className="ant-rate-text">{data.rating}</span>
-				<span className="ant-rate-text"> ({data.ratings_total})</span>
-			</span>
+			<TitleP>{data.title}</TitleP>
+			<DescriptionP>{data.description}</DescriptionP>
 			<Space style={{ height: '50px' }}>
-				{data.buybox_winner.rrp ? (
-					<del>{data.buybox_winner.rrp.raw}</del>
+				{data?.discount ? (
+					// <del>{data.buybox_winner.rrp.raw}</del>
+					<del>{data.cost * data.discount}₴</del>
 				) : null}
 				<p style={{ fontSize: '20pt', fontWeight: 'bold' }}>
-					{data.buybox_winner?.price?.raw || 'Sold'}
+					{data.cost || 'Sold'}₴
 				</p>
 				<Button
 					type="primary"
 					danger
 					shape="round"
 					size="large"
-					style={{ width: '125px' }}
+					style={{ width: '140px' }}
 				>
-					Buy now
+					<ShoppingCartOutlined />
+					Придбати
 				</Button>
 				<Button
 					type="default"
@@ -93,7 +103,7 @@ const Description: React.FC<IDescripton> = ({ data }) => {
 					size="large"
 					onClick={handleToCart}
 				>
-					Add to cart
+					У кошик
 				</Button>
 				<Rate
 					character={<HeartOutlined style={{ fontSize: '30px' }} />}
@@ -104,72 +114,26 @@ const Description: React.FC<IDescripton> = ({ data }) => {
 			<span
 				style={{ margin: '15px 0px', borderBottom: '1px solid lightgray' }}
 			></span>
-			{data.color ? <p>Color: {data.color}</p> : <></>}
-			{/* TODO: move to separate component */}
-			<div style={{ display: 'flex', gap: '10px' }}>
-				{colors
-					? colors.map((color) => (
-							<div
-								key={color.asin}
-								className="ju-al-center"
-								style={{
-									padding: '2px',
-									width: '40px',
-									height: '40px',
-									border: '1px solid lightgray',
-									borderRadius: '.2rem',
-								}}
-							>
-								<Image
-									width={0}
-									height={0}
-									style={{ width: 'auto', height: '100%' }}
-									alt="example"
-									loader={() => color.main_image}
-									src={color.main_image}
-								/>
-							</div>
-					  ))
-					: null}
-			</div>
-			{data?.attributes?.filter((item) => item.name === 'Screen Size')[0]
-				?.value ? (
-				<p>
-					Size:{' '}
-					{
-						data.attributes.filter((item) => item.name === 'Screen Size')[0]
-							?.value
-					}
-				</p>
-			) : null}
-			<div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-				{sizes
-					? sizes.map((size) =>
-							size.dimensions.filter((item) => item.name === 'Size')[0]
-								?.value ? (
-								<div
-									key={size.asin}
-									className="ju-al-center"
-									style={{
-										flexWrap: 'wrap',
-										padding: '3px',
-										minWidth: '50px',
-										height: '30px',
-										border: '1px solid lightgray',
-										borderRadius: '.2rem',
-									}}
-								>
-									<div>
-										{
-											size.dimensions.filter((item) => item.name === 'Size')[0]
-												?.value
-										}
-									</div>
-								</div>
-							) : null
-					  )
-					: null}
-			</div>
+			<Attributes>
+				<Question>
+					<div>Ємність</div>
+					<div>Бренд</div>
+					<div>Вид</div>
+					<div>Виробник</div>
+					<div>{`Міцність (Abv)`}</div>
+					<div>Саббренд</div>
+					<div>Тара</div>
+				</Question>
+				<Answer>
+					<div>Ємність</div>
+					<div>Бренд</div>
+					<div>Вид</div>
+					<div>Виробник</div>
+					<div>{`Міцність (Abv)`}</div>
+					<div>Саббренд</div>
+					<div>Тара</div>
+				</Answer>
+			</Attributes>
 		</div>
 	);
 };

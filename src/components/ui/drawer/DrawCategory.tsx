@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { IAmazonCategory } from '@/types/categories.interface';
-import { AmazonCategory } from '@/services/Amazon/AmazonCategory';
+import { ICategory } from '@/types/categories.interface';
 import { Drawer } from 'antd';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { useActions } from '@/hooks/useActions';
@@ -30,18 +29,27 @@ const DrawLinkWrapper = styled.div`
 `;
 
 const DrawLink = styled.div`
-	/* padding: 5px; */
 	width: 100%;
 	font-size: var(--fs-regular);
 `;
 
-const DrawContent = ({ categories, handleCategory, setShouldChildOpen }) => {
+interface IDrawContent {
+	categories: ICategory[];
+	handleCategory: Function;
+	setShouldChildOpen: Function;
+}
+
+const DrawContent: React.FC<IDrawContent> = ({
+	categories,
+	handleCategory,
+	setShouldChildOpen,
+}) => {
 	return (
 		<div>
 			{categories?.map((category) => (
-				<DrawLinkWrapper key={category.id}>
-					<Link href={`/category/${category.id}`} style={{ width: '100%' }}>
-						<DrawLink>{category.name}</DrawLink>
+				<DrawLinkWrapper key={category._id}>
+					<Link href={`/category/${category._id}`} style={{ width: '100%' }}>
+						<DrawLink>{category.title}</DrawLink>
 					</Link>
 				</DrawLinkWrapper>
 			))}
@@ -49,27 +57,24 @@ const DrawContent = ({ categories, handleCategory, setShouldChildOpen }) => {
 	);
 };
 
-const DrawCategory = ({ categories }) => {
-	const [details, setDetails] = useState<[IAmazonCategory[]] | []>([]);
+interface IDrawCategory {
+	categories: ICategory[];
+}
+
+const DrawCategory: React.FC<IDrawCategory> = ({ categories }) => {
+	const [details, setDetails] = useState<[ICategory[]] | []>([]);
 	const [shouldChildOpen, setShouldChildOpen] = useState(false);
 
 	const user = useTypedSelector((state) => state.user);
 	const { toggleUpperDrawer } = useActions();
 
-	const handleCategory = async (category: IAmazonCategory) => {
-		if (category && category.has_children === true) {
-			const response = await AmazonCategory.getCategory(category.id);
-
-			setDetails(response);
-			setShouldChildOpen(true);
-		}
-	};
+	const handleCategory = async (category: ICategory) => {};
 
 	return (
 		<>
 			<Drawer
 				headerStyle={{ fontSize: '18t' }}
-				title="Categories"
+				title="Меню"
 				placement="left"
 				closable={false}
 				onClose={() => toggleUpperDrawer(!user.upperDrawer)}

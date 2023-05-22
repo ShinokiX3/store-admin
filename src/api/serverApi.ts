@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const serverApi = axios.create({
-	baseURL: 'https://store-server-eight.vercel.app',
+	baseURL: 'http://localhost:3000',
 	headers: {
 		'Content-Type': 'application/json',
 	},
@@ -10,7 +10,7 @@ export const serverApi = axios.create({
 serverApi.interceptors.request.use(
 	(config) => {
 		config.headers = {
-			authorization: `Bearer ${''}`,
+			authorization: `Bearer ${localStorage.getItem('token')}`,
 		};
 
 		return config;
@@ -21,7 +21,7 @@ serverApi.interceptors.request.use(
 serverApi.interceptors.response.use(
 	(config) => {
 		config.headers = {
-			authorization: `Bearer ${''}`,
+			authorization: `Bearer ${localStorage.getItem('token')}`,
 		};
 
 		return config;

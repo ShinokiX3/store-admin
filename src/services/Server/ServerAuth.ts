@@ -1,4 +1,5 @@
 import { serverApi } from '@/api/serverApi';
+import axios from 'axios';
 
 const AUTH = '/auth';
 
@@ -18,7 +19,7 @@ export interface IRegister {
 export const AuthService = {
 	async login({ email, password }: ILogin) {
 		try {
-			const { data } = await serverApi.post<any>(`${AUTH}/login`, {
+			const { data } = await serverApi.post<any>(`${AUTH}/admin-login`, {
 				email: email,
 				password: password,
 			});
@@ -36,6 +37,24 @@ export const AuthService = {
 				phone: phone,
 				email: email,
 			});
+
+			return data;
+		} catch (error) {}
+	},
+
+	async check(token?: string) {
+		try {
+			const { data } = await axios.post(
+				`http://localhost:3000${AUTH}/check`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			console.log({ data });
 
 			return data;
 		} catch (error) {}

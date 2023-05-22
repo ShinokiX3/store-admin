@@ -4,6 +4,7 @@ import List from '@/components/ui/list/List';
 import Pagination from '@/components/ui/pagination/Pagination';
 import Refinements from '@/components/ui/refinements/Refinements';
 import { AmazonProduct } from '@/services/Amazon/AmazonProduct';
+import { IProduct } from '@/types/product.interface';
 import { IAmazonProductsByCategory } from '@/types/products.interface';
 import { Select } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ const Wrapper = styled.div`
 	display: flex;
 	padding: 20px;
 	gap: 20px;
+	width: 100%;
 
 	@media (max-width: 700px) {
 		& {
@@ -35,6 +37,7 @@ const ContentWrapper = styled.div`
 	flex-direction: column;
 	align-items: center;
 	gap: 20px;
+	width: 100%;
 `;
 
 const SortWrapper = styled.div`
@@ -74,20 +77,22 @@ const Category: React.FC<ICategory> = ({ data, categoryId }) => {
 	const [categoryResults, setCategoryResults] = useState(data);
 	const [loading, setLoading] = useState(false);
 
+	console.log(categoryResults);
+
 	// React query status working
 
-	const fetchByParameters = async (page: number, sort?: string) => {
-		window.scrollTo(0, 0);
-		setLoading(true);
-		const data = await AmazonProduct.getByCategoryId(categoryId, page, sort);
-		if (data) {
-			setCategoryResults(data);
-		}
-		setLoading(false);
-	};
+	// const fetchByParameters = async (page: number, sort?: string) => {
+	// 	window.scrollTo(0, 0);
+	// 	setLoading(true);
+	// 	const data = await AmazonProduct.getByCategoryId(categoryId, page, sort);
+	// 	if (data) {
+	// 		setCategoryResults(data);
+	// 	}
+	// 	setLoading(false);
+	// };
 
 	const handleChange = (value: string) => {
-		fetchByParameters(1, value);
+		// fetchByParameters(1, value);
 	};
 
 	useEffect(() => {
@@ -96,7 +101,8 @@ const Category: React.FC<ICategory> = ({ data, categoryId }) => {
 
 	return (
 		<Wrapper>
-			<Refinements data={data.refinements} />
+			{/* <Refinements data={data.refinements} /> */}
+			<Refinements data={{}} />
 			<ContentWrapper>
 				<SortWrapper>
 					<p>Sort products by: </p>
@@ -108,7 +114,7 @@ const Category: React.FC<ICategory> = ({ data, categoryId }) => {
 					/>
 				</SortWrapper>
 				<CardWrapper>
-					{categoryResults.category_results.map((product) =>
+					{categoryResults.map((product: IProduct) =>
 						loading ? (
 							<CardLoader key={product.title} />
 						) : (
@@ -117,9 +123,12 @@ const Category: React.FC<ICategory> = ({ data, categoryId }) => {
 					)}
 				</CardWrapper>
 				<Pagination
-					current={categoryResults.pagination?.current_page}
-					total={categoryResults.pagination?.total_pages}
-					handler={fetchByParameters}
+					// current={`categoryResults.pagination?.current_page`}
+					// total={categoryResults.pagination?.total_pages}
+					current={1}
+					total={1}
+					// handler={fetchByParameters}
+					handler={() => {}}
 				/>
 			</ContentWrapper>
 		</Wrapper>

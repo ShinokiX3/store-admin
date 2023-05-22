@@ -50,7 +50,7 @@ const Checkout = () => {
 	return (
 		<Wrapper>
 			<ContentWrapper>
-				<Title>Checkout</Title>
+				<Title>Чек</Title>
 				<Personal setData={setPersonalInfo} />
 				<Order />
 				<Delivery />
