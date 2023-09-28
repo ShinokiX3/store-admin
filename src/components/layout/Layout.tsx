@@ -7,6 +7,7 @@ import { CategoryService } from '@/services/Server/ServerCategory';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { AuthService } from '@/services/Server/ServerAuth';
 import { redirect } from 'next/navigation';
+import { Spin } from 'antd';
 
 interface ILayout {
 	children?: React.ReactNode;
@@ -48,7 +49,12 @@ const Layout: React.FC<ILayout> = ({ children }) => {
 		fetchCategories();
 	}, []);
 
-	if (loading) return <div>Loading...</div>;
+	if (loading)
+		return (
+			<div>
+				<Spin size="large" />
+			</div>
+		);
 
 	// TODO: create recurcive function for fetching data
 

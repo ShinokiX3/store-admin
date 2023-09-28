@@ -21,6 +21,7 @@ interface DBWrapper {
 	Form: React.ElementType<any>;
 	createOne: Function;
 	children: React.ReactNode;
+	isAdd?: boolean;
 }
 
 const DBWrapper: React.FC<DBWrapper> = ({
@@ -28,10 +29,11 @@ const DBWrapper: React.FC<DBWrapper> = ({
 	Form,
 	createOne,
 	children,
+	isAdd = true,
 }) => {
 	return (
 		<Wrapper>
-			<P>Додати {title}:</P>
+			{isAdd ? <P>Додати {title}:</P> : <></>}
 			<Form createOne={createOne} />
 			<P>Всі {title}:</P>
 			{children}

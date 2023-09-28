@@ -9,6 +9,7 @@ import Capacity from '../capacity/Capacity';
 import Product from '../product/Product';
 import Products from '../products/Products';
 import Categories from '../categories/Categories';
+import Order from '../orders/Order';
 
 interface IType {
 	type: string;
@@ -43,6 +44,9 @@ const ChooseType = (type: string) => {
 			break;
 		case 'category':
 			return <Categories />;
+			break;
+		case 'order':
+			return <Order />;
 			break;
 		default:
 			break;

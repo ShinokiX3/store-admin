@@ -17,10 +17,6 @@ const Brands = styled.div`
 	background-color: #f0f1f2;
 	padding: 5px;
 	border-radius: 0.2rem;
-
-	p {
-		/* padding: 10px; */
-	}
 `;
 
 const Brand = () => {

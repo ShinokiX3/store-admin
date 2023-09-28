@@ -1,12 +1,14 @@
 import { ProductService } from '@/services/Server/ServerProduct';
 import { IProduct } from '@/types/product.interface';
 import React, { useEffect, useState } from 'react';
-import { Image } from 'antd';
+import { Image, Input, Modal } from 'antd';
 import styled from 'styled-components';
 import ProductForm from './ProductForm';
 import DBWrapper from '@/components/ui/wrapper/Wrapper';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { Controls } from '@/components/ui/controls/Controls';
+import { Line } from '@/components/ui/common/Line';
+import ProductEditForm from './ProductEditForm';
 
 const Wrapper = styled.div`
 	min-width: 55vw;
@@ -50,15 +52,25 @@ const P = styled.p`
 	}
 `;
 
+const SearchP = styled.p`
+	font-size: 13pt;
+	margin-right: 10px;
+`;
+
 const Products = () => {
 	const [products, setProducts] = useState<any[]>([]);
+	const [productsView, setProductsView] = useState<any[]>([]);
 	const [loading, setLoading] = useState(false);
+	const [searchValue, setSearchValue] = useState('');
+	const [shouldShow, setShouldShow] = useState(false);
+	const [selEditProduct, setSelEditProduct] = useState<any>({});
 
 	const fetchData = async () => {
 		setLoading(true);
 		const products = await ProductService.getAllProducts();
+		setProducts(products);
 		if (products.length > 0) {
-			setProducts(products);
+			setProductsView(products);
 		}
 		setLoading(false);
 	};
@@ -78,6 +90,15 @@ const Products = () => {
 		fetchData();
 	}, []);
 
+	useEffect(() => {
+		const searchedProducts = products.filter((product) => {
+			const regexp = new RegExp(`${searchValue}`, 'gi');
+			return product.title.match(regexp);
+		});
+		if (searchedProducts.length === 0) setProductsView(products);
+		else setProductsView(searchedProducts);
+	}, [searchValue]);
+
 	if (loading) {
 		return <div>loading...</div>;
 	}
@@ -85,6 +106,19 @@ const Products = () => {
 	return (
 		<DBWrapper title="товари" Form={ProductForm} createOne={createOne}>
 			<Wrapper>
+				<Product
+					key={'product-search'}
+					isWrapp={true}
+					style={{ backgroundColor: 'transparent', marginTop: '15px' }}
+				>
+					<SearchP>Знайти товар: </SearchP>
+					<Input
+						style={{ width: '220px' }}
+						value={searchValue}
+						onChange={(e) => setSearchValue(e.target.value)}
+					/>
+				</Product>
+				<Line />
 				<Product
 					key={'product-about'}
 					isWrapp={true}
@@ -98,7 +132,7 @@ const Products = () => {
 					<p>Discount</p>
 					<p>Quantity in stock</p>
 				</Product>
-				{products.map((product) => (
+				{productsView.map((product) => (
 					<Product key={product._id} isWrapp={false}>
 						<ImageWrapper>
 							<Image
@@ -117,11 +151,24 @@ const Products = () => {
 						<p>{product.discount}</p>
 						<p>{product.inStockQuantity}</p>
 						<Controls>
-							<EditOutlined />
+							<EditOutlined
+								onClick={() => {
+									setSelEditProduct(product);
+									setShouldShow(true);
+								}}
+							/>
 							<CloseOutlined onClick={() => deleteOne(product._id)} />
 						</Controls>
 					</Product>
 				))}
+				<Modal
+					style={{ minWidth: '80%' }}
+					open={shouldShow}
+					onCancel={() => setShouldShow(false)}
+					footer={null}
+				>
+					<ProductEditForm createOne={() => {}} product={selEditProduct} />
+				</Modal>
 			</Wrapper>
 		</DBWrapper>
 	);

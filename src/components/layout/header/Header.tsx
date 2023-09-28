@@ -3,6 +3,7 @@ import Search from '@/components/ui/search/Search';
 import Nav from './Nav';
 import Logo from './Logo';
 import Link from 'next/link';
+import { LogoutOutlined } from '@ant-design/icons';
 
 const StyledHeader = styled.header`
 	display: flex;
@@ -37,10 +38,17 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	font-size: 25pt;
 	padding-bottom: 15px;
 	margin-bottom: 10px;
 	border-bottom: 1px solid lightgray;
+
+	svg {
+		cursor: pointer;
+	}
 `;
 
 const Content = styled.div`
@@ -71,7 +79,10 @@ const Header = () => {
 	return (
 		<Wrapper>
 			<Title>
-				<p>Dashboard</p>
+				<Link style={{ textDecoration: 'none', color: 'black' }} href={'/'}>
+					Dashboard
+				</Link>
+				<LogoutOutlined />
 			</Title>
 			<Content>
 				<Link href={'/product'}>

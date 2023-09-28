@@ -270,11 +270,60 @@ export const ProductService = {
 		} catch (error) {}
 	},
 
+	// Order
+
+	async getAllOrders() {
+		try {
+			const { data } = await serverApi.get<any>(`users/order/all`);
+
+			return data;
+		} catch (error) {}
+	},
+
+	async changeOrderStatus(id: string, status: string) {
+		try {
+			const { data } = await serverApi.post<any>(`users/order/change`, {
+				id,
+				status,
+			});
+
+			return data;
+		} catch (error) {}
+	},
+
 	// All attributes
 
 	async getAllAttributes() {
 		try {
 			const { data } = await serverApi.get<any>(`${PRODUCT}/attributes/all`);
+
+			return data;
+		} catch (error) {}
+	},
+
+	// All attributes
+
+	async getProductServiceChartInfo() {
+		try {
+			const { data } = await serverApi.get<any>(`${PRODUCT}/chart/all`);
+
+			return data;
+		} catch (error) {}
+	},
+
+	async getUserServiceChartInfo() {
+		try {
+			const { data } = await serverApi.get<any>(`users/chart/all`);
+
+			return data;
+		} catch (error) {}
+	},
+
+	// User
+
+	async getAllUsers() {
+		try {
+			const { data } = await serverApi.get<any>(`users/all`);
 
 			return data;
 		} catch (error) {}
